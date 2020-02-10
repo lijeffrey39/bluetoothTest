@@ -24,13 +24,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import { BleManager } from "react-native-ble-plx"
+import {BlueToothTest} from './bluetoothtest.js';
 
 const App: () => React$Node = () => {
-
-  const manager = new BleManager()
-
-
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -44,6 +40,7 @@ const App: () => React$Node = () => {
               <Text style={styles.footer}>Engine: Hermes</Text>
             </View>
           )}
+          <BlueToothTest />
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Step One</Text>

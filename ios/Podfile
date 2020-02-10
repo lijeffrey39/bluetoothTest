@@ -37,6 +37,8 @@ target 'testingBLE' do
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
   pod 'react-native-ble-plx-swift', :path => '../node_modules/react-native-ble-plx'
 
+  pod 'react-native-ble-manager', :path => '../node_modules/react-native-ble-manager'
+
   target 'testingBLETests' do
     inherit! :search_paths
     # Pods for testing
