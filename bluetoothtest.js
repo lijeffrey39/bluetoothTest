@@ -1,17 +1,29 @@
 import React from 'react';
-import { Button, NativeModules, NativeEventEmitter, View, Alert } from 'react-native';
+import { Button, NativeModules, NativeEventEmitter, View, Text } from 'react-native';
 
 import BleManager from 'react-native-ble-manager';
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+// import io from "socket.io-client";
+import SocketIOClient from 'socket.io-client';
 
 export class BlueToothTest extends React.Component{
 
     constructor() { 
         super();
-        this.state = {
-            is_scanning: true
-        }
+        this.socket = SocketIOClient("http://100.64.7.250:5000/test", {query: 'b64=1'});
+        this.state = {}
+        this.socket.on("this data", msg => {
+            // console.log(msg);
+            // this.set = msg['data'];
+            this.setState(msg['data'])
+        });
+        // this.socket.on('connect', () => {
+        //     console.log('Wahey -> connected!');
+        // });
+        // this.socket.on('connect', () => {
+        //     console.log(this.socket.connected); // true
+        // });
         this.gearVR = null;
     }
 
@@ -97,11 +109,20 @@ export class BlueToothTest extends React.Component{
     }
 
     render() {
-        const btnScanTitle = 'Scan Bluetooth (' + (this.state.is_scanning ? 'on' : 'off') + ')';
+        const btnScanTitle = 'Scan Bluetooth (' + (this.set ? 'on' : 'off') + ')';
         return (
             <View style={{margin: 10}}>
             <Button title={btnScanTitle} onPress={() => this.startScan() } />        
-            <Button title={'CONNECT'} onPress={() => this.newConnect() } />
+            <Button title={this.set ? 'on' : 'off'} onPress={() => this.newConnect() } />
+            <Text>
+               {Object.keys(this.state).length == 0 ? '': 'accel x: ' + String(this.state.accel[0])}{"\n"}
+               {Object.keys(this.state).length == 0 ? '': 'accel y: ' + String(this.state.accel[1])}{"\n"}
+               {Object.keys(this.state).length == 0 ? '': 'accel z: ' + String(this.state.accel[2])}{"\n"}{"\n"}
+               {Object.keys(this.state).length == 0 ? '': 'gyro x: ' + String(this.state.gyro[0])}{"\n"}
+               {Object.keys(this.state).length == 0 ? '': 'gyro y: ' + String(this.state.gyro[1])}{"\n"}
+               {Object.keys(this.state).length == 0 ? '': 'gyro z: ' + String(this.state.gyro[2])}{"\n"}
+               {Object.keys(this.state).length == 0 ? '': 'trigger: ' + (this.state.triggerButton ? 'True': 'False')}{"\n"}
+            </Text>
           </View>
         );
     }
