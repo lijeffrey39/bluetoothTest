@@ -1,7 +1,7 @@
 {
     "dependencies": {
         "bootstrap": "4.2.1",
-        "jquery": "3.3.1",
+        "jquery": "3.4.1",
         "midijs": "^0.12.0"
     }
 }
