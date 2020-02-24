@@ -2,16 +2,26 @@
 from flask import Flask
 from flask import render_template
 from flask_socketio import SocketIO, emit
+import os
 
 # creates a Flask application, named app
-app = Flask(__name__)
+
+template_dir = os.path.abspath('caprice-frontend/build/templates')
+app = Flask(__name__, 
+            template_folder=template_dir)
+
+# app = Flask(__name__)
 socketio = SocketIO(app)
 
 # a route where we will display a welcome message via an HTML template
+# @app.route("/")
+# def hello():
+#     message = "Hello, World"
+#     return render_template('index.html', message=message)
+
 @app.route("/")
 def hello():
-    message = "Hello, World"
-    return render_template('index.html', message=message)
+    return render_template('index.html')
 
 @socketio.on('my event', namespace='/test')
 def test_message(message):
