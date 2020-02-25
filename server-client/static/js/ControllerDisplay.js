@@ -1,8 +1,9 @@
 window.AHRS = require('ahrs');
+var MIDI = require('midijs');
 
 class ControllerDisplay {
     constructor() {
-
+        console.log(MIDI);
         this.socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
 
         this.socket.on('my response', function(msg) {
