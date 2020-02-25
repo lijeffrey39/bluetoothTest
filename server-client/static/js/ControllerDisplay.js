@@ -9,6 +9,8 @@ class ControllerDisplay {
             console.log(msg.data);
         });
 
+
+
         this.PATH                 = 'static/models/';
         this.TILT                 = Math.PI * 0.2;
         this.gearVRController     = null;
@@ -254,7 +256,14 @@ class ControllerDisplay {
         let deltaTimeSeconds = 0;
         // this.updateTexture(data);
         // console.log(data);
-        this.socket.emit('my event', {data: data});
+
+        if(data["triggerButton"]){
+            startLog(["accel","gyro","touch"],data,true);
+        } else {
+            startLog(["accel","gyro","touch"],data,false);
+        }
+
+        this.socket.emit('my event', {data: data['accel']});
     }
 
     onClickDeviceActionButton() {
@@ -289,3 +298,4 @@ const controllerDisplay            = new ControllerDisplay();
 const controllerBluetoothInterface = new ControllerBluetoothInterface(
     controllerDisplay.onControllerDataReceived
 );
+

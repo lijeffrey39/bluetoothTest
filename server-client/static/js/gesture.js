@@ -1,0 +1,4 @@
+
+function detectGesture(data, trigger){
+	
+}

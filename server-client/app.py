@@ -22,14 +22,8 @@ def test_message(message):
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
-    # emit('my response', {'data': 'Connected'}, broadcast=True)
+    emit('my response', {'data': 'Connected'}, broadcast=True)
     print("Connected")
-
-
-@socketio.on('button press', namespace='/test')
-def test_connect(buttonNum):
-    print("Button Pressed", buttonNum)
-
 
 # run the application
 if __name__ == "__main__":
