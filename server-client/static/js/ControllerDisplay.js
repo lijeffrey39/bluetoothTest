@@ -1,6 +1,5 @@
 window.AHRS = require('ahrs');
 var MIDI = require('midijs');
-// var file = new MIDI.File();
 
 class ControllerDisplay {
     constructor() {
@@ -11,6 +10,8 @@ class ControllerDisplay {
             console.log(msg.data);
             console.log(navigator)
         });
+
+
 
         this.PATH                 = 'static/models/';
         this.TILT                 = Math.PI * 0.2;
@@ -258,7 +259,14 @@ class ControllerDisplay {
         let deltaTimeSeconds = 0;
         // this.updateTexture(data);
         // console.log(data);
-        this.socket.emit('my event', {data: data});
+
+        if(data["triggerButton"]){
+            startLog(["accel","gyro","touch"],data,true);
+        } else {
+            startLog(["accel","gyro","touch"],data,false);
+        }
+
+        this.socket.emit('my event', {data: data['accel']});
     }
 
     onClickDeviceActionButton() {
@@ -293,3 +301,4 @@ const controllerDisplay            = new ControllerDisplay();
 const controllerBluetoothInterface = new ControllerBluetoothInterface(
     controllerDisplay.onControllerDataReceived
 );
+
