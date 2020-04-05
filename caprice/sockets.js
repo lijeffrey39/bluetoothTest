@@ -7,7 +7,7 @@ export class Sockets extends React.Component{
 
 	constructor() { 
         super();
-        this.socket = SocketIOClient("http://128.237.206.242:5000/test", {query: 'b64=1'});
+        this.socket = SocketIOClient("http://10.0.0.144:5000/test", {query: 'b64=1'});
         this.state = {}
         this.socket.on("this data", msg => {
             this.setState(msg['data'])
@@ -16,13 +16,13 @@ export class Sockets extends React.Component{
 
     sendMessage() {
     	this.socket.emit('button press', 1);
-    	Vibration.vibrate(1000);
-    	const options = {
-		  enableVibrateFallback: true,
-		  ignoreAndroidSystemSettings: false
-		};
+    	// Vibration.vibrate(1000);
+    	// const options = {
+		//   enableVibrateFallback: true,
+		//   ignoreAndroidSystemSettings: false
+		// };
 
-		ReactNativeHapticFeedback.trigger("impactLight");
+		// ReactNativeHapticFeedback.trigger("impactLight");
     }
 
     render() {

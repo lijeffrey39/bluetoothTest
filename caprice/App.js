@@ -1,117 +1,133 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import { StyleSheet, Text, View, FlatList, Dimensions, TouchableHighlight } from 'react-native';
+import SocketIOClient from 'socket.io-client';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const data = [
+  { key: 'A' }, { key: 'B' }, { key: 'C' }, { key: 'D' }, { key: 'E' }, { key: 'F' }, { key: 'G' }, { key: 'H' },
+  // { key: 'K' },
+  // { key: 'L' },
+];
 
-import {Sockets} from './sockets.js';
+const formatData = (data, numColumns) => {
+  const numberOfFullRows = Math.floor(data.length / numColumns);
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <Sockets />
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
+  let numberOfElementsLastRow = data.length - (numberOfFullRows * numColumns);
+  while (numberOfElementsLastRow !== numColumns && numberOfElementsLastRow !== 0) {
+    data.push({ key: `blank-${numberOfElementsLastRow}`, empty: true });
+    numberOfElementsLastRow++;
+  }
+
+  return data;
 };
 
+const numColumns = 2;
+export default class App extends React.Component {  
+  
+  constructor() { 
+    super();
+    this.socket = SocketIOClient("http://10.0.0.144:5000/test", {query: 'b64=1'});
+    this.state = {
+      "A": false,
+      "B": false,
+      "C": false,
+      "D": false,
+      "E": false,
+      "F": false,
+      "G": false,
+      "H": false
+    }
+    this.socket.on("this data", msg => {
+        this.setState(msg['data'])
+    });
+  }
+
+  sendData = (key) => {
+    this.setState(prevState => ({
+      ...prevState,
+      [key]: true
+    }));
+    this.state[key] = true;
+    this.socket.emit('button press', this.state);
+  }
+
+  release = (key) => {
+    this.setState(prevState => ({
+      ...prevState,
+      [key]: false
+    }));
+    this.state[key] = false;
+    this.socket.emit('button press', this.state);
+  }
+
+  changeStyle = (key) => {
+    console.log(key)
+    return styles.item;
+  }
+
+  renderItem = ({ item, index }) => {
+    if (item.empty === true) {
+      return <View style={[styles.item, styles.itemInvisible]} />;
+    }
+    return (
+      // <TouchableHighlight style={styles.item} 
+      //   // onTouchStart={() => this.sendData(item.key)} 
+      //   onPress={() => this.sendData(item.key)}
+      //   onLongPress={()=>console.log("in")}
+      //   onPressOut={()=>console.log("out")}
+      //   >
+        <View onTouchStart={() => this.sendData(item.key)} 
+              onTouchEnd={() => this.release(item.key)}
+              // style={styles.item}>
+              style={this.state[item.key] ? styles.item : styles.itemPressed}>
+          <Text style={this.state[item.key] ? styles.itemText : styles.itemTextPressed}>{item.key}</Text>
+        </View>
+      // </TouchableHighlight>
+    );
+  };
+
+  render() {
+    return (
+      <FlatList
+        extraData={this.state}
+        data={formatData(data, numColumns)}
+        style={styles.container}
+        renderItem={this.renderItem}
+        numColumns={numColumns}
+        scrollEnabled={false}
+      />
+    );
+  }
+}
+
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
+    marginVertical: 20,
+    paddingTop: 20
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  item: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    margin: 1,
+    height: Dimensions.get('window').width / numColumns, // approximate a square
   },
-  body: {
-    backgroundColor: Colors.white,
+  itemPressed: {
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    margin: 1,
+    height: Dimensions.get('window').width / numColumns, // approximate a square
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  itemInvisible: {
+    backgroundColor: 'transparent',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
+  itemText: {
+    color: 'black',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  itemTextPressed: {
+    color: 'white',
   },
 });
-
-export default App;

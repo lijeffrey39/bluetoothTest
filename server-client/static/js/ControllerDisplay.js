@@ -1,12 +1,15 @@
 window.AHRS = require('ahrs');
+var MIDI = require('midijs');
+// var file = new MIDI.File();
 
 class ControllerDisplay {
     constructor() {
-
+        console.log(MIDI);
         this.socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
 
         this.socket.on('my response', function(msg) {
             console.log(msg.data);
+            console.log(navigator)
         });
 
         this.PATH                 = 'static/models/';
@@ -78,6 +81,7 @@ class ControllerDisplay {
         //     console.log("hi");
         // }));
         console.log(this.PATH);
+        console.log(navigator);
         if (navigator.bluetooth) {
             document.getElementById('deviceActions').addEventListener(
                 'change',
